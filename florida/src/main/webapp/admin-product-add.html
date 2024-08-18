@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <style>
+        body {
+            display: flex;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .container-section {
+            margin-left: 60px;
+            padding: 5.5% 7% 4% 7%;
+            width: calc(100% - 60px);
+            transition: margin-left 0.5s;
+        }
+
+        .sidenav.open ~ .container-section {
+            margin-left: 250px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .large-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 7% 7% 2% 7%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .form-group .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .form-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { checkAuth } from './src/java/auth.js';
+
+    createNavbar();
+
+    async function addProduct() {
+        const product = {
+            product_name: document.getElementById('productName').value,
+            description: document.getElementById('description').value,
+            quantity: document.getElementById('quantity').value,
+            status: document.getElementById('status').value,
+            colors: document.getElementById('colors').value,
+            sizes: document.getElementById('sizes').value,
+            image: document.getElementById('imageBase64').value
+        };
+        if (!validateInputs()) {
+            return;
+        }
+        const jwt = localStorage.getItem('jwt');
+
+        try {
+            const response = await fetch('/api/products/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                },
+                body: JSON.stringify(product)
+            });
+
+            if (response.ok) {
+                alert('Product added successfully');
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                const errorData = await response.json();
+                console.error('Error adding product:', errorData.error);
+                alert('Error adding product');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error adding product');
+        }
+    }
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result;
+            document.getElementById('imageBase64').value = base64String;
+            document.getElementById('imagePreview').src = base64String;
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+    function validateInputs() {
+        const productName = document.getElementById('productName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const quantity = document.getElementById('quantity').value.trim();
+        const status = document.getElementById('status').value.trim();
+
+        if (!productName || !description || !quantity || !status) {
+            alert('Please fill in all required fields: productName, description, quantity, status.');
+            return false;
+        }
+        return true;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+
+        document.getElementById('submitButton').addEventListener('click', addProduct);
+    });
+</script>
+
+<div class="container-section">
+    <div class="header">
+        <h1>Add Product</h1>
+    </div>
+    <div class="large-card">
+        <div class="form-container">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required>
+            </div>
+            <div class="form-group">
+                <label for="sizes">Sizes</label>
+                <input type="text" id="sizes" name="sizes" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="Active">Active</option>
+                    <option value="Disabled">Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="colors">Colors</label>
+                <input type="text" id="colors" name="colors">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="imageInput">Image</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <input type="hidden" id="imageBase64">
+                <div class="image-preview">
+                    <img id="imagePreview" src="" alt="Image preview">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="submit-button" id="submitButton">Add Product</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

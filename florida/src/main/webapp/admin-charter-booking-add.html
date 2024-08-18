@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Charter Booking</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <style>
+        body {
+            display: flex;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .container-section {
+            margin-left: 60px;
+            padding: 5.5% 7% 4% 7%;
+            width: calc(100% - 60px);
+            transition: margin-left 0.5s;
+        }
+
+        .sidenav.open ~ .container-section {
+            margin-left: 250px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .large-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 7% 7% 2% 7%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group input[disabled] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .form-group .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .form-group .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 1000px) {
+            .form-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { checkAuth } from './src/java/auth.js';
+
+    createNavbar();
+
+    async function loadCharters() {
+        try {
+            const jwt = localStorage.getItem('jwt');
+            const response = await fetch('/api/charters/get/all', {
+                headers: { 'Authorization': `Bearer ${jwt}` }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch charters');
+            }
+
+            const charters = await response.json();
+            const charterSelect = document.getElementById('charterId');
+            charters.forEach(charter => {
+                const option = document.createElement('option');
+                option.value = charter.charter_Id;
+                option.textContent = charter.title;
+                charterSelect.appendChild(option);
+            });
+            console.log(charters)
+
+        } catch (error) {
+            console.error('Error loading charters:', error);
+        }
+    }
+
+
+    async function submitBooking() {
+        const booking = {
+            customerName: document.getElementById('customerName').value,
+            customerEmail: document.getElementById('customerEmail').value,
+            bookingDate: document.getElementById('bookingDate').value,
+            charterId: document.getElementById('charterId').value,
+            specialRequests: document.getElementById('specialRequests').value,
+        };
+        console.log("bookings submit",booking)
+        if (!validateInputs()) {
+            return;
+        }
+
+        const jwt = localStorage.getItem('jwt');
+
+        try {
+            const response = await fetch('/api/charter_bookings/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                },
+                body: JSON.stringify(booking)
+            });
+
+            if (response.ok) {
+                alert('Booking added successfully');
+                window.location.href = 'admin-charter-booking.html';
+            } else {
+                const errorData = await response.json();
+                console.error('Error adding booking:', errorData.error);
+                alert('Error adding booking');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error adding booking');
+        }
+    }
+
+    function validateInputs() {
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerEmail = document.getElementById('customerEmail').value.trim();
+        const bookingDate = document.getElementById('bookingDate').value.trim();
+
+        if (!customerName || !customerEmail || !bookingDate) {
+            alert('Please fill in all required fields: customer name, customer email, booking date.');
+            return false;
+        }
+        return true;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        loadCharters();
+        document.getElementById('submitButton').addEventListener('click', submitBooking);
+    });
+</script>
+
+<div class="container-section">
+    <div class="header">
+        <h1>Add Charter Booking</h1>
+    </div>
+    <div class="large-card">
+        <div class="form-container">
+            <div class="form-group">
+                <label for="customerName">Customer Name</label>
+                <input type="text" id="customerName" name="customerName" required>
+            </div>
+            <div class="form-group">
+                <label for="customerEmail">Customer Email</label>
+                <input type="email" id="customerEmail" name="customerEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="bookingDate">Booking Date</label>
+                <input type="date" id="bookingDate" name="bookingDate" required>
+            </div>
+            <div class="form-group">
+                <label for="charterId">Charter</label>
+                <select id="charterId" name="charterId" required>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="specialRequests">Special Requests</label>
+                <textarea id="specialRequests" name="specialRequests"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="button" class="submit-button" id="submitButton">Add Booking</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Reports Dashboard</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/admin.css">
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { setProfileImg } from './src/java/profile.js';
+    import { checkAuth } from './src/java/auth.js';
+
+    createNavbar();
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        setProfileImg();
+    });
+
+</script>
+
+<div class="container-section">
+    <div class="search-container">
+        <div class="page-titel"><h1>Fishing Reports</h1></div>
+        <div class="search-menu">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <img class="search-icon" src="/images/icons8-search-50.png" id="searchIcon">
+            <button id="add-report">Add Report</button>
+        </div>
+        <div>
+            <a href="#logout"><img class="icon profileImg" src="/images/profile.jpeg" alt="Profile-img"></a>
+        </div>
+    </div>
+    <div class="large-card">
+       aaaaaa
+    </div>
+</div>
+
+</body>
+</html>

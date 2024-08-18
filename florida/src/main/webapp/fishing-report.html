@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Charter</title>
+    <style>
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            background: rgba(8, 56, 42, 0.8);
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+
+        .menu-item {
+            margin: 0 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            color: #13BC6E;
+        }
+
+        .language-switcher {
+            position: relative;
+            margin: 0 15px;
+        }
+
+        .language-switcher select {
+            width: 120px;
+            padding: 8px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 5px;
+            border: none;
+            background: #ABABAB;
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-text {
+            font-size: 54px;
+            font-family: 'Playfair Display SC', serif;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .language-switcher select:hover,
+        .language-switcher select:focus {
+            background: #13BC6E;
+        }
+
+        .language-switcher::after {
+            content: '▼';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: white;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(8, 56, 42, 0.95);
+            min-width: 97px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 13px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s;
+            font-size: 12pt;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #13BC6E;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-right {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .menu-item {
+                margin: 10px 0;
+            }
+
+            .dropdown-content {
+                left: auto;
+                right: 0;
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Old Standard TT', serif;
+            box-sizing: border-box;
+        }
+
+        * {
+            box-sizing: inherit;
+        }
+
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: white;
+        }
+
+        .section {
+            width: 100%;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .bg-green {
+            background: #08382A;
+            width: 100%;
+            height: 247px;
+            display: block;
+        }
+
+        .hero-section {
+            width: 100%;
+            height: 845px;
+            position: relative;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-image {
+            width: 54px;
+            height: 53px;
+        }
+
+        .logo-text {
+            margin-left: 10px;
+            font-size: 24px;
+            font-family: 'Playfair Display SC', serif;
+            font-weight: 700;
+            color: black;
+        }
+
+        .section-content {
+            width: 100%;
+            max-width: 1440px;
+            position: relative;
+            margin: 0 auto;
+            margin-bottom: 200px;
+            margin-top: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-section {
+            width: 100%;
+            height: 501px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #08382A;
+            color: white;
+        }
+
+        .s-1 {
+            font-size: 28px;
+            font-family: 'Old Standard TT';
+        }
+
+        .s-2 {
+            font-size: 47px;
+            font-weight: bolder;
+        }
+
+        .footer-section div {
+            margin: 20px 0;
+        }
+
+        a {
+            text-decoration: none !important;
+        }
+
+        .report-card {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            transition: transform 0.3s ease;
+            width: 90%; /* Adjusted to take 90% of the container width */
+            max-width: 800px; /* Limit the maximum width */
+        }
+
+        .report-card img {
+            max-width: 300px;
+            border-radius: 10px;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+
+        .report-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .report-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #154529;
+            margin-bottom: 10px;
+        }
+
+        .report-description {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .report-date {
+            font-size: 16px;
+            color: #777;
+            margin-top: auto;
+        }
+
+        .report-card:hover {
+            transform: scale(1.03);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .report-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: left;
+            }
+
+            .report-card img {
+                margin-right: 0;
+                margin-bottom: 20px;
+                max-width: 100%;
+            }
+
+            .report-details {
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .report-title {
+                font-size: 24px;
+            }
+
+            .report-description {
+                font-size: 16px;
+            }
+
+            .report-date {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero-section relative">
+        <img class="hero-image" src="/images/mainImg.png" alt="Hero Image">
+        <div class="navbar">
+            <div class="navbar-left">
+                <img class="logo-image" src="/images/JustRightFloridaCharterslogo.png" alt="Logo">
+                <div class="logo-text">JustRightfloridaCharters</div>
+            </div>
+            <div class="navbar-right">
+                <a href="/index.html"  class="menu-item home" >Home</a>
+                <a href="/shop.html"  class="menu-item shop" >shop</a>
+                <a href="/book-now.html" class="menu-item">Book Now</a>
+                <a href="/fishing-report.html" class="menu-item">Fishing Report</a>
+
+                <div class="language-switcher">
+                    <select>
+                        <option value="english">English</option>
+                        <option value="spanish">Spanish</option>
+                    </select>
+                </div>
+            </div>        </div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                Discover the <br>Thrill of<br>Fishing
+            </div>
+            <div href="/book-now.html" class="button"><a href="/book-now.html" class="book-now">Book Now</a></div>
+        </div>
+    </div>
+    <div class="section bg-green"></div>
+    <div class="section-content relative">
+        <!-- Fishing reports will be inserted here -->
+    </div>
+
+    <div class="footer-section">
+        <div class="s-1">shop</div>
+        <div class="s-2">home</div>
+        <div class="s-1">book now</div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        async function fetchFishingReports() {
+            try {
+                const response = await fetch('/api/fishing_reports/get/all');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch fishing reports');
+                }
+                const reports = await response.json();
+                const reportsContainer = document.querySelector('.section-content');
+
+                reports.forEach(report => {
+                    const reportCard = document.createElement('div');
+                    reportCard.classList.add('report-card');
+                    reportCard.innerHTML = `
+                        <img src="${report.image}" alt="Fishing Report Image">
+                        <div class="report-details">
+                            <div class="report-title">${report.title}</div>
+                            <div class="report-description">${report.description}</div>
+                            <div class="report-date">${new Date(report.date).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                    reportsContainer.appendChild(reportCard);
+                });
+            } catch (error) {
+                console.error('Error fetching fishing reports:', error);
+            }
+        }
+
+        fetchFishingReports();
+    });
+</script>
+
+</body>
+</html>

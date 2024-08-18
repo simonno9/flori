@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/admin.css">
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { setProfileImg } from './src/java/profile.js';
+    import { checkAuth } from './src/java/auth.js';
+    import { filterTable } from './src/java/filter.js';
+
+    createNavbar();
+
+    async function deleteNow(id, update, query) {
+        const jwt = localStorage.getItem('jwt');
+        const response = await fetch(query, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${jwt}`
+            }
+        });
+        if (response.ok) {
+            update(); // Call the update function passed as an argument
+        } else {
+            console.error('Error deleting item:', response.statusText);
+        }
+    }
+
+    function editform(id, type) {
+        const data = JSON.parse(localStorage.getItem(type)) || [];
+        const item = data.find(r => r.id === id);
+        if (item) {
+            localStorage.setItem('selectedProduct', JSON.stringify(item));
+            window.location.href = `admin-product-edit.html?id=${id}`;
+        }
+    }
+
+    window.deleteNow = deleteNow;
+    window.editform = editform;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        fetchProducts();
+        setProfileImg();
+
+        document.getElementById('add-product').addEventListener('click', function() {
+            window.location.href = 'admin-product-add.html';
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterTable();
+            }
+        });
+
+        document.getElementById('searchIcon').addEventListener('click', filterTable);
+    });
+
+    async function fetchProducts() {
+        try {
+            const jwt = localStorage.getItem('jwt');
+            const response = await fetch('/api/products/get/all', {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const products = await response.json();
+            localStorage.setItem('products', JSON.stringify(products));
+            const tableBody = document.getElementById('contact-table-body');
+            tableBody.innerHTML = '';
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${product.product_name}</td>
+                <td>${product.description}</td>
+                <td>${product.quantity}</td>
+                <td>${product.status}</td>
+                <td>${product.colors}</td>
+                <td>${product.sizes}</td>
+                <td><img src="${product.image}" style="width: 150px;"></td>
+
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-button" onclick="editform(${product.id}, 'products')">Edit</button>
+                        <button class="delete-button" onclick="deleteNow(${product.id}, fetchProducts, '/api/products/delete/${product.id}')">Delete</button>
+                    </div>
+                </td>
+                `;
+                row.onclick = function() {
+                    editform(product.id, 'products');
+                };
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
+</script>
+
+<div class="container-section">
+    <div class="search-container">
+        <div class="page-titel" style="margin-right: 20% !important;"><h1>Products</h1></div>
+        <div class="search-menu">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <img class="search-icon" src="/images/icons8-search-50.png" id="searchIcon">
+            <button id="add-product">Add Product</button>
+        </div>
+        <div>
+            <a href="#logout"><img class="icon profileImg" src="/images/profile.jpeg" alt="Profile-img"></a>
+        </div>
+    </div>
+    <div class="large-card">
+        <table class="contact-table" id="project-table">
+            <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Colors</th>
+                <th>Sizes</th>
+                <th>image</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="contact-table-body">
+            <!-- Table rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

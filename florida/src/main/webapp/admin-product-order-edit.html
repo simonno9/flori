@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product Order</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <style>
+        body {
+            display: flex;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .container-section {
+            margin-left: 60px;
+            padding: 5.5% 7% 4% 7%;
+            width: calc(100% - 60px);
+            transition: margin-left 0.5s;
+        }
+
+        .sidenav.open ~ .container-section {
+            margin-left: 250px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .large-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 7% 7% 2% 7%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group input[disabled] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .form-group .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .form-group .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .form-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { checkAuth } from './src/java/auth.js';
+
+    createNavbar();
+
+    async function loadOrderAndProducts() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id');
+        if (!orderId) {
+            alert('No order ID found in the URL');
+            window.location.href = 'admin-product-order.html';
+            return;
+        }
+
+        try {
+            const jwt = localStorage.getItem('jwt');
+            const [orderResponse, productsResponse] = await Promise.all([
+                fetch(`/api/product_orders/get/${orderId}`, {
+                    headers: { 'Authorization': `Bearer ${jwt}` }
+                }),
+                fetch('/api/products/get/all', {
+                    headers: { 'Authorization': `Bearer ${jwt}` }
+                })
+            ]);
+
+            if (!orderResponse.ok || !productsResponse.ok) {
+                throw new Error('Failed to fetch order or products');
+            }
+
+            const order = await orderResponse.json();
+            const products = await productsResponse.json();
+
+            const productSelect = document.getElementById('productId');
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.product_name;
+                option.dataset.description = product.description;
+                option.dataset.sizes = product.sizes;
+                option.dataset.colors = product.colors;
+
+                // Check if this is the product of the current order and set it as selected
+                if (product.id === order.productId) {
+                    option.selected = true;
+                }
+
+                productSelect.appendChild(option);
+            });
+
+            // Update the product information fields with the selected product details
+            updateProductInfo();
+
+            // Set other order fields
+            document.getElementById('orderQuantity').value = order.orderQuantity;
+            document.getElementById('orderDate').value = order.orderDate;
+
+        } catch (error) {
+            console.error('Error loading order or products:', error);
+        }
+    }
+
+    function updateProductInfo() {
+        const productSelect = document.getElementById('productId');
+        const selectedOption = productSelect.selectedOptions[0];
+
+        if (selectedOption) {
+            document.getElementById('productDescription').value = selectedOption.dataset.description;
+            document.getElementById('productSizes').value = selectedOption.dataset.sizes;
+            document.getElementById('productColors').value = selectedOption.dataset.colors;
+        }
+    }
+
+    async function editOrder() {
+        const order = {
+            orderId: new URLSearchParams(window.location.search).get('id'),
+            productId: document.getElementById('productId').value,
+            orderQuantity: document.getElementById('orderQuantity').value,
+            orderDate: document.getElementById('orderDate').value
+        };
+
+        console.log(order,'send  post ORDERS!')
+
+        if (!validateInputs()) {
+            return;
+        }
+
+        const jwt = localStorage.getItem('jwt');
+
+        try {
+            const response = await fetch('/api/product_orders/edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                },
+                body: JSON.stringify(order)
+            });
+
+            if (response.ok) {
+                alert('Product order edited successfully');
+                window.location.href = 'admin-product-order.html';
+            } else {
+                const errorData = await response.json();
+                console.error('Error editing product order:', errorData.error);
+                alert('Error editing product order');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error editing product order');
+        }
+    }
+
+    function validateInputs() {
+        const productId = document.getElementById('productId').value.trim();
+        const orderQuantity = document.getElementById('orderQuantity').value.trim();
+        const orderDate = document.getElementById('orderDate').value.trim();
+
+        if (!productId || !orderQuantity || !orderDate) {
+            alert('Please fill in all required fields: productId, orderQuantity, orderDate.');
+            return false;
+        }
+        return true;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        loadOrderAndProducts();
+
+        document.getElementById('productId').addEventListener('change', updateProductInfo);
+        document.getElementById('submitButton').addEventListener('click', editOrder);
+
+    });
+</script>
+
+<div class="container-section">
+    <div class="header">
+        <h1>Edit Product Order</h1>
+    </div>
+    <div class="large-card">
+        <div class="form-container">
+            <div class="form-group">
+                <label for="productId">Product</label>
+                <select id="productId" name="productId" required></select>
+            </div>
+            <div class="form-group">
+                <label for="orderQuantity">Order Quantity</label>
+                <input type="number" id="orderQuantity" name="orderQuantity" required>
+            </div>
+                <input type="date" id="orderDate" hidden name="orderDate" required>
+            <div class="form-group">
+                <label for="productDescription">Product Description</label>
+                <input type="text" id="productDescription" name="productDescription" disabled>
+            </div>
+            <div class="form-group">
+                <label for="productSizes">Sizes</label>
+                <input type="text" id="productSizes" name="productSizes" disabled>
+            </div>
+            <div class="form-group">
+                <label for="productColors">Colors</label>
+                <input type="text" id="productColors" name="productColors" disabled>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="submit-button" id="submitButton">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

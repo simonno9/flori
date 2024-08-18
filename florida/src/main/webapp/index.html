@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Charter</title>
+    <style>
+
+
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            background: rgba(8, 56, 42, 0.8); /* Semi-transparent background */
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+
+        .menu-item {
+            margin: 0 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            position: relative; /* Required for the dropdown positioning */
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            color: #13BC6E; /* Hover color */
+        }
+
+        .language-switcher {
+            position: relative;
+            margin: 0 15px;
+        }
+
+        .language-switcher select {
+            width: 120px;
+            padding: 8px 10px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 5px;
+            border: none;
+            background: #ABABAB;
+            color: white;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        .hero-content {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hero-text {
+            font-size: 54px;
+            font-family: 'Playfair Display SC', serif;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .language-switcher select:hover,
+        .language-switcher select:focus {
+            background: #13BC6E;
+        }
+
+        .language-switcher::after {
+            content: '▼';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: white;
+        }
+
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(8, 56, 42, 0.95);
+            min-width: 97px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 13px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s;
+            FONT-SIZE: 12pt;
+
+        }
+
+        .dropdown-content a:hover {
+            background-color: #13BC6E;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-right {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .menu-item {
+                margin: 10px 0;
+            }
+
+            .dropdown-content {
+                left: auto;
+                right: 0;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        body {
+            margin: 0;
+            font-family: 'Old Standard TT', serif;
+            box-sizing: border-box;
+        }
+        * {
+            box-sizing: inherit;
+        }
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: white;
+        }
+        .section {
+            width: 100%;
+        }
+        .relative {
+            position: relative;
+        }
+        .bg-green {
+            background: #08382A;
+            width: 100%;
+            height: 247px;
+            display: block; /* Ensures it takes up space even if empty */
+        }
+        .hero-section {
+            width: 100%;
+            height: 845px;
+            position: relative;
+        }
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+
+        .logo-image {
+            width: 54px;
+            height: 53px;
+        }
+        .logo-text {
+            margin-left: 10px;
+            font-size: 24px;
+            font-family: 'Playfair Display SC', serif;
+            font-weight: 700;
+            color: black;
+        }
+        .w1-header {
+            margin-bottom: 4%;
+            width: 300px;
+            font-family: 'Playfair Display SC', serif;
+        }
+
+
+        .button {
+            background: #13BC6E;
+            border-radius: 17px;
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 130px;
+            margin-top: 20px; /* Adjust the spacing between text and button */
+        }
+        .section-content {
+            width: 100%;
+            max-width: 1440px;
+            position: relative;
+            margin: 0 auto; /* Center the section horizontally */
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1199px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px; /* Increased gap between images */
+            justify-content: center;
+            padding-top: 123px; /* Add padding to avoid overlap with absolutely positioned elements */
+        }
+        .content-block {
+            width: 100%;
+            max-width: 569px; /* Ensures max width for each block */
+            text-align: center; /* Center align text for smaller screens */
+        }
+        .content-block img {
+            width: 100%;
+            height: auto;
+            object-fit: cover; /* Ensures the image covers the container */
+        }
+        .content-text {
+            color: #6B696D;
+            font-size: 17px;
+            font-family: Old Standard TT,serif;
+            font-weight: 400;
+            word-wrap: break-word;
+            margin-top: 10px; /* Space between image and text */
+        }
+        .content-title {
+            color: #1F1F21;
+            font-size: 29px;
+            font-family: Playfair Display SC;
+            font-weight: 700;
+            word-wrap: break-word;
+            margin-top: 20px; /* Space between title and text */
+        }
+        .text-highlight {
+            color: #88A6A7;
+            font-weight: 700;
+        }
+        .premium-section {
+            width: 100%;
+            height: 668px;
+            position: relative;
+        }
+        .premium-background {
+            width: 100%;
+            height: 100%;
+            background: #0A3530;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .premium-content {
+            width: 100%;
+            max-width: 1211px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+        }
+        .premium-block {
+            width: 100%;
+            max-width: 310px;
+            position: relative;
+            color: white;
+            font-family: Old Standard TT, serif;
+        }
+        .premium-title {
+            font-size: 30px;
+            font-family: Playfair Display SC, serif;
+            font-weight: 700;
+        }
+        .premium-text {
+            font-size: 17px;
+            font-weight: 400;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-text {
+                font-size: 36px;
+            }
+            .button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+            .navbar-right {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .menu-item {
+                margin: 5px 0;
+            }
+            .content-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px; /* Reduce gap between blocks for smaller screens */
+            }
+            .content-block {
+                width: 100%;
+            }
+            .premium-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            .premium-block {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero-text {
+                font-size: 24px;
+            }
+            .button {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            .logo-text {
+                font-size: 18px;
+            }
+            .navbar-right {
+                padding: 5px;
+            }
+            .menu-item {
+                font-size: 16px;
+                margin: 3px 0;
+            }
+            .premium-title {
+                font-size: 24px;
+            }
+            .premium-text {
+                font-size: 14px;
+            }
+            .shop-container {
+                justify-content: center; /* Center the shop content on small screens */
+            }
+            .shop-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            .image-section {
+                margin-left: 0; /* Remove left margin on small screens */
+                margin-top: 20px; /* Add space between info part and images */
+            }
+            .image-1, .image-2 {
+                width: 90%; /* Smaller images on mobile */
+                height: auto;
+                top: 0;
+                left: 0;
+            }
+        }
+
+        .section-explore-shop {
+            margin-top: 50px;
+            align-self: center;
+            max-height: 2200px;
+        }
+        .shop-container {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            height: auto;
+            padding: 50px 0;
+        }
+        .shop-content {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1230px;
+            margin-left: 20px; /* Add margin to the left side */
+        }
+        .text-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 427px;
+            position: relative;
+        }
+        .shop-title {
+            color: #1E3347;
+            font-size: 47px;
+            font-family: 'Playfair Display SC', serif;
+            font-weight: 700;
+        }
+        .shop-subtitle {
+            color: #848A8B;
+            font-size: 17px;
+            font-family: 'Old Standard TT', serif;
+            font-weight: 700;
+            line-height: 30px;
+            margin-top: 20px;
+        }
+        .browse-now {
+            color: #2B3C4D;
+            font-size: 21px;
+            font-family: 'Old Standard TT', serif;
+            font-weight: 700;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .icon-left {
+            width: 39px;
+            height: 121px;
+            margin-right: 10px;
+        }
+        .shop-description {
+            color: #787C81;
+            font-size: 18px;
+            font-family: 'Old Standard TT', serif;
+            font-weight: 700;
+            line-height: 35px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .shop-button {
+            width: 153px;
+            height: 50px;
+            background: #21945E;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 17px;
+            font-family: 'Old Standard TT', serif;
+            font-weight: 700;
+            text-align: center;
+        }
+        .extra-text {
+            color: #787C81;
+            font-size: 18px;
+            font-family: 'Old Standard TT', serif;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+        .image-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-left: 400px;    }
+        .image-1 {
+            width: 349px;
+            height: 539px;
+            border-radius: 15px;
+            border: 1px black solid;
+            margin-bottom: 15px;
+            position: relative;
+            left: 15px;
+        }
+        .image-2 {
+            width: 327px;
+            height: 558px;
+            border-radius: 15px;
+            position: relative;
+            top: -65%;
+            left: -50%;
+        }
+        .footer-section {
+            width: 100%;
+            height: 501px;
+            display: flex;
+            flex-direction: column; /* Center items vertically */
+            justify-content: center;
+            align-items: center;
+            background: #08382A;
+            color: white; /* Assuming you want the text to be white */
+        }
+        .IMG-SHOP{
+
+            position: absolute; top: -500px; height: 1259px; position: relative
+        }
+        @media (max-width: 1000px) {
+
+            .IMG-SHOP{
+
+                position: absolute;
+                top: -900px;
+                position: relative
+            }
+        }
+        .s-1{
+            font-size: 28px;
+            font-family: 'Old Standard TT';
+        }
+        .s-2{
+            font-size: 47px;
+            font-weight: bolder;
+
+        }
+        .footer-section div {
+            margin: 20px 0; /* Add some margin between the items */
+        }
+        a {
+            text-decoration: none !important;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero-section relative">
+        <img class="hero-image" src="/images/mainImg.png" alt="Hero Image">
+        <div class="navbar">
+            <div class="navbar-left">
+                <img class="logo-image" src="/images/JustRightFloridaCharterslogo.png" alt="Logo">
+                <div class="logo-text">JustRightfloridaCharters</div>
+            </div>
+            <div class="navbar-right">
+                <a href="/index.html"  class="menu-item home" >Home</a>
+                <a href="/shop.html"  class="menu-item shop" >shop</a>
+                <a href="/book-now.html" class="menu-item">Book Now</a>
+                <a href="/fishing-report.html" class="menu-item">Fishing Report</a>
+
+                <div class="language-switcher">
+                    <select>
+                        <option value="english">English</option>
+                        <option value="spanish">Spanish</option>
+                    </select>
+                </div>
+            </div>        </div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                Discover the <br>Thrill of<br>Fishing
+            </div>
+            <div  href="/book-now.html" class="button"><a href="/book-now.html" class="book-now">Book Now</a></div>
+        </div>
+    </div>
+    <div class="section bg-green"></div>
+    <div class="section-content relative">
+        <div class="content-wrapper">
+            <div class="content-block">
+                <img src="/images/rboat.png" alt="Boat 3">
+                <div class="content-text">Immerse yourself in the serenity of the open waters and experience the ultimate fishing getaway</div>
+            </div>
+            <div class="content-block">
+                <div class="content-title w1-header">Elevate Your Fishing Experience</div>
+                <img src="/images/rboat2.png" alt="Boat 2">
+                <div class="content-text">Discover Our Premier Boats</div>
+                <div class="content-text text-highlight">Unparalleled Quality</div>
+                <div class="content-text text-highlight">Exceptional Service</div>
+            </div>
+        </div>
+    </div>
+    <div class="premium-section">
+        <div class="premium-background"></div>
+        <div class="premium-content">
+            <div class="premium-block">
+                <div class="premium-title">Premium Gear</div>
+                <div class="premium-text">Unlock the Secrets of the Deep: Our Fishing Charters Offer Unparalleled Access to the Best Fishing Spots, Equipped with the Latest Gear and Guided by Experienced Captains Who</div>
+            </div>
+            <div class="premium-block">
+                <div class="premium-title">Personalized</div>
+                <div class="premium-text">Tailor Your Fishing Adventure: Whether You're a Seasoned Angler or a Beginner, Our Customizable Charters Cater to Your Preferences, Ensuring a Truly Unforgettable Experience on the Water</div>
+            </div>
+            <div class="premium-block">
+                <div class="premium-title">Lifetime Memories</div>
+                <div class="premium-text">Create Lifelong Memories on the Water: Our Fishing Charters Offer the Perfect Opportunity to Bond with Friends, Family, or Colleagues, Making Unforgettable Moments that</div>
+            </div>
+        </div>
+    </div>
+    <div class="section-explore-shop">
+        <h1 class="shop-title">Explore Our Shop</h1>
+        <div class="shop-container">
+            <div class="shop-content">
+                <div class="text-section">
+                    <div class="shop-subtitle">Discover a Curated Selection of Premium Fishing Gear and Apparel, Designed to Enhance Your Fishing Experience and Keep You Comfortable on the Water</div>
+                    <div class="shop-description">
+                        <img class="icon-left" src="/images/selection.png" />
+                        <div>
+                            <div class="browse-now">Browse Now</div>
+                            <p>Elevate Your Fishing Game with Our Expertly Curated Collection of Rods, Reels, Lures, and Accessories</p>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <div class="shop-button">Shop Now</div>
+                    </div>
+                    <div class="extra-text">Upgrade Your Fishing Kit and Elevate Your Time on the Water with Our Carefully</div>
+                </div>
+                <div class="image-section">
+                    <img class="image-1" src="/images/page1.png" />
+                    <img class="image-2" src="/images/page2.png" />
+                </div>
+            </div>
+        </div>
+        <div  class="IMG-SHOP" >
+            <div style="left: 19px; top: 0px; position: absolute; color: #1E3347; font-size: 47px; font-family: Playfair Display SC; font-weight: 700; word-wrap: break-word">Contact Us</div>
+            <div style="width: 589px; height: 723px; left: 0px; top: 536px; position: absolute">
+                <img style="width: 589px; height: 475px; left: 0px; top: 0px; position: absolute; border-radius: 10px" src="/images/personfish.png" />
+                <div style="width: 570px; height: 209px; left: 0px; top: 514px; position: absolute">
+                    <div style="width: 570px; left: 0px; top: 0px; position: absolute; color: #1E3347; font-size: 36px; font-family: Playfair Display SC; font-weight: 700; word-wrap: break-word">Reel in the Catch of a Lifetime<br/></div>
+                    <div style="width: 527px; height: 78px; left: 0px; top: 131px; position: absolute; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="width: 527px; height: 78px; color: #787C81; font-size: 18px; font-family: Old Standard TT; font-weight: 700; word-wrap: break-word">Embark on a Fishing Excursion Like No Other, Guided by our Experienced Captains Who Will Take You to the Most Productive </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 624px; height: 392px; left: 6px; top: 112px; position: absolute">
+                <div style="width: 284px; height: 392px; left: 0px; top: 0px; position: absolute">
+                    <img style="width: 284px; height: 271.34px; left: 0px; top: 0px; position: absolute" src="images/person1.png" />
+                    <div style="width: 277px; height: 78px; padding-bottom: 18px; left: 0px; top: 314px; position: absolute; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="width: 277px; text-align: center; color: #787C81; font-size: 18px; font-family: Old Standard TT; font-weight: 700; line-height: 30px; word-wrap: break-word">Speak with our Knowledgeable Team to Plan </div>
+                    </div>
+                </div>
+                <div style="width: 284px; height: 391px; left: 340px; top: 0px; position: absolute">
+                    <img style="width: 284px; height: 271px; left: 0px; top: 0px; position: absolute" src="images/contact2.png" />
+                    <div style="width: 277px; height: 78px; padding-bottom: 18px; left: 3px; top: 313px; position: absolute; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="width: 277px; text-align: center; color: #787C81; font-size: 18px; font-family: Old Standard TT; font-weight: 700; line-height: 30px; word-wrap: break-word">Discover the Perfect Spot to Cast Your Line</div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 538px; height: 468px; left: 670px; top: 708px; position: absolute">
+                <div style="width: 527px; height: 198px; left: 0px; top: 270px; position: absolute">
+                    <div style="width: 485px; left: 0px; top: 0px; position: absolute; color: #1E3347; font-size: 36px; font-family: Playfair Display SC; font-weight: 700; word-wrap: break-word">Reel in your catch with our captains</div>
+                    <div style="width: 527px; height: 78px; left: 0px; top: 120px; position: absolute; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="width: 527px; height: 78px; color: #787C81; font-size: 18px; font-family: Old Standard TT; font-weight: 700; word-wrap: break-word">Embark on a Fishing Excursion Like No Other, Guided by our Experienced Captains Who Will Take You to the Most Productive </div>
+                    </div>
+                </div>
+                <img style="width: 538px; height: 262px; left: 0px; top: 0px; position: absolute; border-radius: 10px" src="/images/personfish2.png" />
+            </div>
+            <div style="width: 467px; height: 389px; left: 724px; top: 112px; position: absolute">
+                <div style="width: 461px; left: 6px; top: 226px; position: absolute; color: #848A8B; font-size: 17px; font-family: Old Standard TT; font-weight: 700; line-height: 30px; word-wrap: break-word">Elevate Your Fishing Experience with Our Curated Packages, Offering Unparalleled Access to the Best Fishing Spots, Premium Gear</div>
+                <div style="width: 346px; left: 0px; top: 0px; position: absolute; color: #1E3347; font-size: 47px; font-family: Playfair Display SC; font-weight: 700; word-wrap: break-word">Explore Our Fishing <br>Packages</div>
+                <div style="width: 153px; height: 50px; left: 2px; top: 339px; position: absolute">
+                    <div style="width: 153px; height: 50px; left: 0px; top: 0px; position: absolute; background: #13BC6E; border-radius: 17px"></div>
+                    <div style="left: 41px; top: 16px; position: absolute; color: white; font-size: 17px; font-family: Old Standard TT; font-weight: 700; word-wrap: break-word">Book Now</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-section">
+        <div class="s-1">shop</div>
+        <div class="s-2">home</div>
+        <div class="s-1">book now</div>
+    </div>
+
+</div>
+</body>
+</html>

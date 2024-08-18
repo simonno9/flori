@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Reports Dashboard</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/admin.css">
+</head>
+<style>
+    .page-title {
+        margin-right: 20% !important;
+    }
+</style>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { setProfileImg } from './src/java/profile.js';
+    import { checkAuth } from './src/java/auth.js';
+    import { filterTable } from './src/java/filter.js';
+    import { deleteRow } from './src/java/delete.js';
+
+    createNavbar();
+
+
+    window.deleteRow = deleteRow;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        fetchReports();
+        setProfileImg();
+
+        document.getElementById('add-report').addEventListener('click', function() {
+            window.location.href = 'admin-fishing-report-add.html';
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterTable();
+            }
+        });
+
+        document.getElementById('searchIcon').addEventListener('click', filterTable);
+    });
+
+    async function fetchReports() {
+        try {
+            const jwt = localStorage.getItem('jwt');
+            const response = await fetch('/api/fishing_reports/get/all', {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const reports = await response.json();
+            const tableBody = document.getElementById('report-table-body');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            reports.forEach(report => {
+                const row = document.createElement('tr');
+
+                const titleCell = document.createElement('td');
+                titleCell.textContent = report.title;
+
+                const descriptionCell = document.createElement('td');
+                descriptionCell.textContent = report.description;
+
+                const dateCell = document.createElement('td');
+                dateCell.textContent = report.date;
+
+                const imageCell = document.createElement('td');
+                const img = document.createElement('img');
+                img.src = report.image || ''; // Show image or empty string if no image
+                img.style.maxWidth = '100px'; // Set a small size for table preview
+                img.style.maxHeight = '100px';
+                imageCell.appendChild(img);
+
+                const actionsCell = document.createElement('td');
+                const actionButtonsDiv = document.createElement('div');
+                actionButtonsDiv.classList.add('action-buttons');
+
+                const editButton = document.createElement('button');
+                editButton.classList.add('edit-button');
+                editButton.textContent = 'Edit';
+                console.log(report,"here report")
+
+                editButton.addEventListener('click', () => {
+                    window.location.href = `admin-fishing-report-edit.html?id=${report.id}`;
+                });
+                const deleteButton = document.createElement('button');
+                deleteButton.classList.add('delete-button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', async () => {
+                    await deleteRow(report.id, fetchReports, `/api/fishing_reports/delete/${report.id}`);
+                });
+
+                actionButtonsDiv.appendChild(editButton);
+                actionButtonsDiv.appendChild(deleteButton);
+                actionsCell.appendChild(actionButtonsDiv);
+
+                row.appendChild(titleCell);
+                row.appendChild(descriptionCell);
+                row.appendChild(dateCell);
+                row.appendChild(imageCell);
+                row.appendChild(actionsCell);
+
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching reports:', error);
+        }
+    }
+</script>
+
+<div class="container-section">
+    <div class="search-container">
+        <div class="page-title" style="margin-right: 20% !important;"><h1>Fishing Reports</h1></div>
+        <div class="search-menu">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <img class="search-icon" src="/images/icons8-search-50.png" id="searchIcon">
+            <button id="add-report">Add Report</button>
+        </div>
+        <div>
+            <a href="#logout"><img class="icon profileImg" src="/images/profile.jpeg" alt="Profile-img"></a>
+        </div>
+    </div>
+    <div class="large-card">
+        <table class="contact-table" id="report-table">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="report-table-body">
+            <!-- Table rows will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+body {
+    display: flex;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.container-section {
+    margin-left: 60px;
+    padding: 5.5% 7% 4% 7%;
+    width: calc(100% - 60px);
+    transition: margin-left 0.5s;
+}
+
+.sidenav.open ~ .container-section {
+    margin-left: 250px;
+}
+
+.header h1 {
+    margin-top: 0;
+}
+
+.large-card {
+    background-color: #ffffff;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    padding: 7% 7% 2% 7%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.form-group input[disabled] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.form-group .submit-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    float: right;
+}
+
+.form-group .submit-button:hover {
+    background-color: #45a049;
+}
+
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.page-titel {
+    margin-right: 20%;
+}
+.page-title {
+    margin-right: 20% !important;
+}
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+}
+
+@media (max-width: 1000px) {
+    .form-container {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Charter</title>
+    <link rel="stylesheet" href="./src/styles/navbar.css">
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <style>
+        body {
+            display: flex;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .container-section {
+            margin-left: 60px;
+            padding: 5.5% 7% 4% 7%;
+            width: calc(100% - 60px);
+            transition: margin-left 0.5s;
+        }
+
+        .sidenav.open ~ .container-section {
+            margin-left: 250px;
+        }
+
+        .header h1 {
+            margin-top: 0;
+        }
+
+        .large-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            padding: 7% 7% 2% 7%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .form-group .submit-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .form-group .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 1000px) {
+            .form-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<script type="module">
+    import { createNavbar } from './src/component/navbar.js';
+    import { checkAuth } from './src/java/auth.js';
+
+    createNavbar();
+
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result;
+            document.getElementById('imageBase64').value = base64String;
+            document.getElementById('imagePreview').src = base64String;
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function addCharter() {
+        const charter = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            price: document.getElementById('price').value,
+            people: document.getElementById('people').value,
+            deposit: document.getElementById('deposit').value,
+            availability_status: document.getElementById('availabilityStatus').value,
+            image: document.getElementById('imageBase64').value // Add base64 image string
+        };
+
+        if (!validateInputs()) {
+            return;
+        }
+
+        const jwt = localStorage.getItem('jwt');
+
+        try {
+            const response = await fetch('/api/charters/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                },
+                body: JSON.stringify(charter)
+            });
+
+            if (response.ok) {
+                alert('Charter added successfully');
+                window.location.href = 'admin-charter.html';
+            } else {
+                const errorData = await response.json();
+                console.error('Error adding charter:', errorData.error);
+                alert('Error adding charter');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error adding charter');
+        }
+    }
+
+    function validateInputs() {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const price = document.getElementById('price').value.trim();
+        const people = document.getElementById('people').value.trim();
+        const deposit = document.getElementById('deposit').value.trim();
+
+        if (!title || !description || !price || !people || !deposit) {
+            alert('Please fill in all required fields: title, description, price, people, deposit.');
+            return false;
+        }
+        return true;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        document.getElementById('submitButton').addEventListener('click', addCharter);
+    });
+</script>
+
+<div class="container-section">
+    <div class="header">
+        <h1>Add Charter</h1>
+    </div>
+    <div class="large-card">
+        <div class="form-container">
+            <div class="form-group">
+                <label for="title">Charter Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="people">People</label>
+                <input type="text" id="people" name="people" required>
+            </div>
+            <div class="form-group">
+                <label for="deposit">Deposit</label>
+                <input type="number" id="deposit" name="deposit" required>
+            </div>
+            <div class="form-group">
+                <label for="availabilityStatus">Availability Status</label>
+                <select id="availabilityStatus" name="availabilityStatus">
+                    <option value="Available">Available</option>
+                    <option value="Disabled">disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="imageInput">Image</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <input type="hidden" id="imageBase64">
+                <div class="image-preview">
+                    <img id="imagePreview" src="" alt="Image preview">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="submit-button" id="submitButton">Add Charter</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
